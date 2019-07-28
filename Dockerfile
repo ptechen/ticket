@@ -1,6 +1,6 @@
-From ubuntu
+FROM ubuntu
 ADD . /ticket
-WORKDIR /work
+WORKDIR /ticket
 RUN apt-get update
 RUN export LANG=zh_CN.UTF-8
 RUN apt-get install python3 -y
