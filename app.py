@@ -23,9 +23,10 @@ CHAOJIYING_KIND = 1902
 CHAOJIYING_KIND1 = 1005
 chrome_options = webdriver.ChromeOptions()
 #无头模式
+chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument('--headless')
+chrome_options.add_argument('--disable-dev-shm-usage')
 chrome_options.add_argument('window-size=1920,1080')
-
 chrome_options.add_argument('--disable-gpu')
 #实例化Chrome driver823
 # driver=webdriver.Chrome(chrome_options=chrome_options)
