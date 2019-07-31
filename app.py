@@ -279,6 +279,7 @@ class CrackTouClick(object):
 
     def insert_shopping(self):
         print("start insert shopping")
+        time.sleep(0.5)
         try:
             self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
         except Exception as E:
@@ -346,8 +347,10 @@ class CrackTouClick(object):
         self.browser.save_screenshot("choose_pay.png")
 
     def confirm_mei(self):
+        print("start_confirm_mei")
         self.browser.find_element_by_xpath('//*[@id="checkbox-tnc"]').click()
         self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div/span').click()
+        print("end confirm_mei")
 
     def confirm(self):
         print("start confirm")
@@ -443,26 +446,26 @@ class CrackTouClick(object):
 
 
 if __name__ == '__main__':
-    params = {"account": "pychance", "password": "TC15736755067", "email": '15736755067@163.com',
-                       "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
-                       "input_card_number": "379387027461007", "input_security_code": 9549,
-                       "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
-              "start_time": 1564624500
-                       }
-    # params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
-    #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
-    #           "input_card_number": "379387027461007", "input_security_code": 9549,
-    #           "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
+    # params = {"account": "pychance", "password": "TC15736755067", "email": '15736755067@163.com',
+    #                    "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
+    #                    "input_card_number": "379387027461007", "input_security_code": 9549,
+    #                    "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
     #           "start_time": 1564624500
-    #           }
-    redisConn = RedisConn()
-    redisConn.write(params)
+    #                    }
+    # # params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
+    # #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
+    # #           "input_card_number": "379387027461007", "input_security_code": 9549,
+    # #           "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
+    # #           "start_time": 1564624500
+    # #           }
+    # redisConn = RedisConn()
+    # redisConn.write(params)
     # redisConn.write(params1)
     # while time.time() < 1564624500:
     #     time.sleep(1)
 
-#     crack = CrackTouClick()
-#     crack.login_crack()
+    crack = CrackTouClick()
+    crack.login_crack()
 # 'http://msg.urbtix.hk/'
 #     '//*[@id="to-hot-event-btn"]' click
 #
