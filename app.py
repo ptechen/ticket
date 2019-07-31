@@ -41,21 +41,6 @@ class RedisConn(object):
         params_str = json.dumps(params)
         self.red.sadd("key", params_str)
 
-class CrackTouClick(object):
-    def __init__(self):
-        self.url = 'http://www.baidu.com'
-        self.KeyUrl = 'https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38663'
-        self.browser = webdriver.Chrome(options=chrome_options)
-        self.browser_headless = True
-        self.wait = WebDriverWait(self.browser, 20)
-        self.chaojiying = Chaojiying(CHAOJIYING_USERNAME, CHAOJIYING_PASSWORD, CHAOJIYING_SOFT_ID)
-        # self.pool = redis.ConnectionPool(host='47.56.66.23', password='123456', port=6379, db=0, max_connections=2)
-        # self.red = redis.Redis(connection_pool=self.pool)
-        self.params = None
-
-    def __del__(self):
-            self.browser.close()
-
     def get_redis(self):
         flage = True
         while flage:
@@ -68,12 +53,27 @@ class CrackTouClick(object):
             value_d = json.loads(value)
             return value_d
 
+class CrackTouClick(object):
+    def __init__(self, params):
+        self.url = 'http://www.baidu.com'
+        self.KeyUrl = 'https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38663'
+        self.browser = webdriver.Chrome(options=chrome_options)
+        self.browser_headless = True
+        self.wait = WebDriverWait(self.browser, 20)
+        self.chaojiying = Chaojiying(CHAOJIYING_USERNAME, CHAOJIYING_PASSWORD, CHAOJIYING_SOFT_ID)
+        # self.pool = redis.ConnectionPool(host='47.56.66.23', password='123456', port=6379, db=0, max_connections=2)
+        # self.red = redis.Redis(connection_pool=self.pool)
+        self.params = params
+
+    def __del__(self):
+            self.browser.close()
+
     def open(self):
         """
         打开网页输入用户名密码
         :return: None
         """
-        self.params = self.get_redis()
+        # self.params = self.get_redis()
         self.browser.get(self.url)
         search = self.wait.until(EC.presence_of_element_located((By.ID, 'kw')))
         search.send_keys("城市售票网")
@@ -93,11 +93,18 @@ class CrackTouClick(object):
 
     def login(self):
         self.browser.get('https://ticket.urbtix.hk/internet/login/memberLogin')
-        j_username = self.wait.until(EC.presence_of_element_located((By.ID, 'j_username')))
-        j_username.send_keys(self.params.get("account"))
-        j_password = self.wait.until(EC.presence_of_element_located((By.ID, 'j_password')))
-        j_password.send_keys(self.params.get("password"))
-        time.sleep(2)
+        while True:
+            time.sleep(2)
+            try:
+                j_username = self.wait.until(EC.presence_of_element_located((By.ID, 'j_username')))
+                j_username.clear()
+                j_username.send_keys(self.params.get("account"))
+                j_password = self.wait.until(EC.presence_of_element_located((By.ID, 'j_password')))
+                j_password.clear()
+                j_password.send_keys(self.params.get("password"))
+                break
+            except Exception as E:
+                print(E)
 
     def get_touclick_button(self):
         """
@@ -446,26 +453,44 @@ class CrackTouClick(object):
 
 
 if __name__ == '__main__':
+    while
+    redisConn = RedisConn()
+    params = redisConn.get_redis()
+    while time.time() < params.get('start_time', 0):
+        print(1)
+        time.sleep(1)
+
+    crack = CrackTouClick(params)
+    crack.login_crack()
+
+
     # params = {"account": "pychance", "password": "TC15736755067", "email": '15736755067@163.com',
     #                    "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
     #                    "input_card_number": "379387027461007", "input_security_code": 9549,
     #                    "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
     #           "start_time": 1564624500
     #                    }
-    # # params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
-    # #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
-    # #           "input_card_number": "379387027461007", "input_security_code": 9549,
-    # #           "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
-    # #           "start_time": 1564624500
-    # #           }
+    # # # # params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
+    # # # #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
+    # # # #           "input_card_number": "379387027461007", "input_security_code": 9549,
+    # # # #           "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
+    # # # #           "start_time": 1564624500
+    # # # #           }
     # redisConn = RedisConn()
     # redisConn.write(params)
-    # redisConn.write(params1)
-    # while time.time() < 1564624500:
-    #     time.sleep(1)
 
-    crack = CrackTouClick()
-    crack.login_crack()
+
+
+
+    # # redisConn.write(params1)
+    #
+    # params = redisConn.get_redis()
+    # while time.time() < params.get('start_time', 0):
+    #     print(1)
+    #     time.sleep(1)
+    #
+    # crack = CrackTouClick(params)
+    # crack.login_crack()
 # 'http://msg.urbtix.hk/'
 #     '//*[@id="to-hot-event-btn"]' click
 #
