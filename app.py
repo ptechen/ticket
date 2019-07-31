@@ -252,7 +252,6 @@ class CrackTouClick(object):
             if self.browser.current_url != self.params.get("key_url"):
                 self.browser.get(self.params.get("key_url"))
             try:
-                time.sleep(0.1)
                 self.browser.find_element_by_xpath('//*[@id="evt-perf-items-tbl"]/tbody/tr[{}]/td[6]/div/img'.format(self.params.get('period'))).click()
                 break
             except Exception as E:
@@ -261,7 +260,7 @@ class CrackTouClick(object):
         # self.browser.save_screenshot("choose_ticker.png")
 
     def choose_ticker_num(self):
-        print("start choose_ticker_num")
+        # print("start choose_ticker_num")
         self.wait.until(EC.presence_of_element_located((By.ID, 'ticket-quota-223-sel')))
         html = self.browser.page_source.replace('xmlns="http://www.w3.org/1999/xhtml"', '')
         options = PyQuery(html).find('#ticket-quota-223-sel > option')
@@ -282,8 +281,6 @@ class CrackTouClick(object):
         # self.browser.save_screenshot("choose_ticket_num.png")
 
     def insert_shopping(self):
-        print("start insert shopping")
-        time.sleep(0.5)
         try:
             self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
         except Exception as E:
@@ -460,13 +457,13 @@ if __name__ == '__main__':
 
 
     # params = {"account": "pychance", "password": "TC15736755067", "email": '15736755067@163.com',
-    #                    "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
+    #                    "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38382",
     #                    "input_card_number": "379387027461007", "input_security_code": 9549,
     #                    "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
     #           "start_time": 1564624500
     #                    }
     # # # # params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
-    # # # #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38948",
+    # # # #           "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38382",
     # # # #           "input_card_number": "379387027461007", "input_security_code": 9549,
     # # # #           "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
     # # # #           "start_time": 1564624500
