@@ -33,21 +33,19 @@ chrome_options.add_argument('--disable-gpu')
 
 
 class RedisConn(object):
-    def __init__(self):
-        self.pool = redis.ConnectionPool(host='47.56.66.23', password='123456', port=6379, db=0, max_connections=2)
-        self.red = redis.Redis(connection_pool=self.pool)
 
     def write(self, params):
+        red = redis.Redis(host='47.56.66.23', password='123456', port=6379, db=0)
         params_str = json.dumps(params)
-        self.red.sadd("key", params_str)
+        red.sadd("key", params_str)
 
     def get_redis(self):
         flage = True
         while flage:
-            red = redis.Redis(host='127.0.0.1', password='123456', port=6379, db=0)
+            red = redis.Redis(host='47.56.66.23', password='123456', port=6379, db=0)
             value = red.spop("key")
             if value == None:
-                time.sleep(3)
+                time.sleep(10)
                 print("continue")
                 continue
             value_d = json.loads(value)
