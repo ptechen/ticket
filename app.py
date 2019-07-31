@@ -453,15 +453,15 @@ class CrackTouClick(object):
 
 
 if __name__ == '__main__':
-    while
-    redisConn = RedisConn()
-    params = redisConn.get_redis()
-    while time.time() < params.get('start_time', 0):
-        print(1)
-        time.sleep(1)
+    while True:
+        redisConn = RedisConn()
+        params = redisConn.get_redis()
+        while time.time() < params.get('start_time', 0):
+            print(1)
+            time.sleep(1)
 
-    crack = CrackTouClick(params)
-    crack.login_crack()
+        crack = CrackTouClick(params)
+        crack.login_crack()
 
 
     # params = {"account": "pychance", "password": "TC15736755067", "email": '15736755067@163.com',
