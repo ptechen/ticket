@@ -242,7 +242,6 @@ class CrackTouClick(object):
     def choose_ticker(self):
         try:
             self.browser.find_element_by_xpath('//*[@id="concurrent-login-yes"]/div/div').click()
-            time.sleep(1)
         except Exception as E:
             print(E)
         while True:
@@ -255,7 +254,7 @@ class CrackTouClick(object):
             except Exception as E:
                 pass
 
-        self.browser.save_screenshot("choose_ticker.png")
+        # self.browser.save_screenshot("choose_ticker.png")
 
     def choose_ticker_num(self):
         print("start choose_ticker_num")
@@ -276,7 +275,7 @@ class CrackTouClick(object):
         #     self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[8]/div/div').click()
             print(E)
         print("end choose_ticket_num")
-        self.browser.save_screenshot("choose_ticket_num.png")
+        # self.browser.save_screenshot("choose_ticket_num.png")
 
     def insert_shopping(self):
         print("start insert shopping")
@@ -294,7 +293,7 @@ class CrackTouClick(object):
             except Exception as E:
                 print(E)
         print("end insert shopping")
-        self.browser.save_screenshot("insert_shopping.png")
+        # self.browser.save_screenshot("insert_shopping.png")
 
     def payment_area(self):
         print("start payment_area")
@@ -309,7 +308,7 @@ class CrackTouClick(object):
                 print(E)
 
         print("end payment_area")
-        self.browser.save_screenshot("payment_area.png")
+        # self.browser.save_screenshot("payment_area.png")
 
     def personal_data(self):
         self.wait.until(EC.presence_of_element_located((By.ID, 'delivery-method-select')))
