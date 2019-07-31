@@ -46,7 +46,6 @@ class RedisConn(object):
             value = red.spop("key")
             if value == None:
                 time.sleep(10)
-                print("continue")
                 continue
             value_d = json.loads(value)
             return value_d
@@ -454,7 +453,6 @@ if __name__ == '__main__':
         redisConn = RedisConn()
         params = redisConn.get_redis()
         while time.time() < params.get('start_time', 0):
-            print(1)
             time.sleep(1)
 
         crack = CrackTouClick(params)
