@@ -44,7 +44,7 @@ class RedisConn(object):
     def get_redis(self):
         flage = True
         while flage:
-            red = redis.Redis(host='47.56.66.23', password='123456', port=6379, db=0)
+            red = redis.Redis(host='127.0.0.1', password='123456', port=6379, db=0)
             value = red.spop("key")
             if value == None:
                 time.sleep(3)
@@ -449,7 +449,6 @@ class CrackTouClick(object):
         print(time.clock() - start)
         self.confirm_mei()
         time.sleep(120)
-        time.sleep(300)
 
 
 if __name__ == '__main__':
