@@ -438,7 +438,7 @@ class CrackTouClick(object):
         self.personal_data()
         self.choose_pay_mei()
         print(time.clock() - start)
-        # self.confirm_mei()
+        self.confirm_mei()
         time.sleep(120)
         time.sleep(300)
 
