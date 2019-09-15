@@ -456,8 +456,6 @@ if __name__ == '__main__':
         crack.login_crack()
 
 
-    # redisConn = RedisConn()
-    # redisConn.write(params1)
 
 
 
