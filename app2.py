@@ -58,6 +58,7 @@ class CrackTouClick(object):
         self.url = 'http://www.baidu.com'
         self.KeyUrl = 'https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38663'
         self.browser = webdriver.Chrome(options=chrome_options)
+        # self.browser = webdriver.Chrome()
         self.browser_headless = True
         self.wait = WebDriverWait(self.browser, 20)
         self.chaojiying = Chaojiying(CHAOJIYING_USERNAME, CHAOJIYING_PASSWORD, CHAOJIYING_SOFT_ID)
@@ -68,63 +69,27 @@ class CrackTouClick(object):
     def __del__(self):
             self.browser.close()
 
-    def open(self):
+    def get_screenshot(self):
         """
-        打开网页输入用户名密码
-        :return: None
+        获取网页截图
+        :return: 截图对象
         """
-        # self.params = self.get_redis()
-        self.browser.get(self.url)
-        search = self.wait.until(EC.presence_of_element_located((By.ID, 'kw')))
-        search.send_keys("城市售票网")
-        baidu_click = self.wait.until(EC.presence_of_element_located((By.ID, 'su')))
-        baidu_click.click()
-        spw = self.wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="1"]/h3/a[1]')))
-        spw.click()
-        self.browser.switch_to.window(self.browser.window_handles[1])
-        if self.browser.current_url == "https://busy.urbtix.hk/":
-            time.sleep(4)
-        if self.browser.current_url == "https://busy.urbtix.hk/redirect.html":
-            time.sleep(4)
-            try:
-                self.browser.find_element_by_xpath('/html/body/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/a').Click()
-            except Exception as E:
-                print(E)
-
-    def login(self):
-        self.browser.get('https://ticket.urbtix.hk/internet/login/memberLogin')
-        while True:
-            time.sleep(2)
-            try:
-                j_username = self.wait.until(EC.presence_of_element_located((By.ID, 'j_username')))
-                j_username.clear()
-                j_username.send_keys(self.params.get("account"))
-                j_password = self.wait.until(EC.presence_of_element_located((By.ID, 'j_password')))
-                j_password.clear()
-                j_password.send_keys(self.params.get("password"))
-                break
-            except Exception as E:
-                print(E)
-
-    def get_touclick_button(self):
-        """
-        获取初始验证按钮
-        :return:
-        """
-        button = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'touclick-hod-wrap')))
-        return button
+        screenshot = self.browser.get_screenshot_as_png()
+        screenshot = Image.open(BytesIO(screenshot))
+        return screenshot
 
     def get_touclick_element(self, kind):
         """
         获取验证图片对象
         :return: 图片对象
         """
+        element = ""
         if kind == 1:
             self.wait.until(EC.presence_of_element_located((By.ID, 'captchaImage')))
             element = self.browser.find_element_by_xpath('//*[@id="captchaImage"]')
             # element = self.wait.until(EC.presence_of_element_located((By.ID, 'captchaImage')))
         elif kind == 2:
-            self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#captcha-image-input-key-container > table > tbody')))
+            self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#captcha-image-input-key-container > table > tbody > tr')))
             element = self.browser.find_element_by_xpath('//*[@id="captcha-image-input-key-container"]/table/tbody/tr[1]')
         elif kind == 3:
             self.wait.until(EC.presence_of_element_located((By.CSS_SELECTOR, '#captcha-image-input-key-container > table > tbody')))
@@ -148,15 +113,6 @@ class CrackTouClick(object):
         # 583 633 622 872
         return top, bottom, left, right
 
-    def get_screenshot(self):
-        """
-        获取网页截图
-        :return: 截图对象
-        """
-        screenshot = self.browser.get_screenshot_as_png()
-        screenshot = Image.open(BytesIO(screenshot))
-        return screenshot
-
     def get_touclick_image(self, kind=1):
         """
         获取验证码图片
@@ -167,56 +123,17 @@ class CrackTouClick(object):
         print(top, bottom, left, right)
         im = self.get_screenshot()
         self.browser.save_screenshot('full_snap.png')
-        if kind == 1 and self.browser_headless:
-            self.browser.save_screenshot('full_snap.png')
-            image = Image.open('full_snap.png')
-            resized_image = image.resize((1920, 1080), Image.ANTIALIAS)
-            resized_image.save('full_snap.png')
+        # if kind == 1 and self.browser_headless:
+        self.browser.save_screenshot('full_snap.png')
+        image = Image.open('full_snap.png')
+        resized_image = image.resize((1920, 1080), Image.ANTIALIAS)
+        resized_image.save('full_snap.png')
 
         im = Image.open('full_snap.png')
         # im = Image.open(name)
         captcha = im.crop((left, top, right, bottom))
         captcha.save(name)
         return captcha
-
-    def get_points(self, captcha_result):
-        """
-        解析识别结果
-        :param captcha_result: 识别结果
-        :return: 转化后的结果
-        """
-        groups = captcha_result.get('pic_str').split('|')
-        locations = [[int(number) for number in group.split(',')] for group in groups]
-        return locations
-
-    # def touch_click_words(self, locations):
-    #     """
-    #     点击验证图片
-    #     :param locations: 点击位置
-    #     :return: None
-    #     """
-    #     for location in locations:
-    #         print(location)
-    #         ActionChains(self.browser).move_to_element_with_offset(self.get_touclick_element(), location[0],
-    #                                                                location[1]).click().perform()
-    #         time.sleep(1)
-
-    def touch_click_verify(self):
-        """
-        点击验证按钮
-        :return: None
-        """
-        button = self.wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'touclick-pub-submit')))
-        button.click()
-
-    def login_click(self):
-        """
-        登录
-        :return: None
-        """
-        self.browser.find_element_by_xpath('//*[@id="login-submit"]/div/div').click()
-        time.sleep(2)
-        print('login success')
 
     def get_picture_result(self, kind):
         image = self.get_touclick_image(kind)
@@ -231,8 +148,65 @@ class CrackTouClick(object):
         print(result)
         return result['pic_str']
 
+    def open(self):
+        """
+        打开网页输入用户名密码
+        :return: None
+        """
+        # self.params = self.get_redis()
+        self.browser.get(self.url)
+        search = self.wait.until(EC.presence_of_element_located((By.ID, 'kw')))
+        search.send_keys("城市售票网")
+        baidu_click = self.wait.until(EC.presence_of_element_located((By.ID, 'su')))
+        baidu_click.click()
+        spw = self.wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="1"]/h3/a[1]')))
+        spw.click()
+        self.browser.switch_to.window(self.browser.window_handles[1])
+        print(self.browser.current_url)
+        if self.browser.current_url == "https://busy.urbtix.hk/redirect.html" or \
+                self.browser.current_url == "http://busy.urbtix.hk/redirect.html":
+            time.sleep(1)
+            try:
+                self.browser.find_element_by_xpath('/html/body/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/a').click()
+            except Exception as E:
+                print(E)
+
+    def check_current_page_url(self):
+        key = 0
+        while True:
+            print("key: ", key)
+            try:
+                if key == 0:
+                    self.browser.find_element_by_xpath('//*[@id="hot-event-alert-message"]/a').click()
+                    key = 1
+            except Exception as E:
+                print(E)
+            if self.browser.current_url == "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/39311":
+                html = self.browser.page_source
+                kk =PyQuery(html)
+                aa = kk.find("#evt-ava-perf-content").find("tr").find("img")
+                num = 0
+                for a in aa:
+                    aaa = PyQuery(a).attr("title")
+                    print(aaa)
+                    if aaa == "查看門票詳情":
+                        num += 1
+                    if aaa == "購買門票":
+                        break
+                self.browser.find_element_by_xpath('//*[@id="evt-perf-items-tbl"]/tbody/tr[{}]/td[6]/div/img'.format(num)).click()
+                break
+            if self.browser.current_url == "https://busy.urbtix.hk/redirect.html" or \
+                    self.browser.current_url == "http://busy.urbtix.hk/redirect.html":
+                time.sleep(1)
+                try:
+                    self.browser.find_element_by_xpath(
+                        '/html/body/div[2]/table/tbody/tr/td/table/tbody/tr[4]/td/a').click()
+                except Exception as E:
+                    print(E)
+            time.sleep(0.1)
+            
     def refresh(self):
-        self.browser.find_element_by_xpath('//*[@id="loginForm"]/div/div[2]/table/tbody/tr/td[1]/table/tbody/tr[8]/td[2]/img[2]').click()
+        self.browser.find_element_by_xpath('//*[@id="loginForm"]/div/table/tbody/tr[3]/td[2]/table/tbody/tr[16]/td/img[2]').click()
         time.sleep(2)
 
     def click_code(self, key_index):
@@ -246,136 +220,18 @@ class CrackTouClick(object):
                         index + 1)).click()
             time.sleep(0.2)
 
-    def choose_ticker(self):
-        try:
-            self.browser.find_element_by_xpath('//*[@id="concurrent-login-yes"]/div/div').click()
-        except Exception as E:
-            print(E)
-        while True:
-            if self.browser.current_url != self.params.get("key_url"):
-                self.browser.get(self.params.get("key_url"))
-            try:
-                self.browser.find_element_by_xpath('//*[@id="evt-perf-items-tbl"]/tbody/tr[{}]/td[6]/div/img'.format(self.params.get('period'))).click()
-                break
-            except Exception as E:
-                pass
-
-        # self.browser.save_screenshot("choose_ticker.png")
-
-    def choose_ticker_num(self):
-        # print("start choose_ticker_num")
-        self.wait.until(EC.presence_of_element_located((By.ID, 'ticket-quota-223-sel')))
-        html = self.browser.page_source.replace('xmlns="http://www.w3.org/1999/xhtml"', '')
-        options = PyQuery(html).find('#ticket-quota-223-sel > option')
-        num = PyQuery(options[-1]).val()
-        self.browser.find_element_by_xpath('//*[@id="ticket-quota-223-sel"]').send_keys(1)
-        # self.browser.find_element_by_xpath('//*[@id="ticket-quota-223-sel"]').send_keys(int(num))
-        self.browser.find_element_by_xpath('//*[@id="adjacent-seats-chk"]').click()
-        try:
-            self.browser.find_element_by_xpath('//*[@id="express-purchase-btn"]/div/span').click()
-        except:
-            self.browser.find_element_by_xpath('//*[@id="free-seat-purchase-btn"]/div/div/span').click()
-        try:
-            self.browser.find_element_by_xpath('/html/body/div[9]/div[3]/div/button[1]').click()
-        except Exception as E:
-        #     self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[8]/div/div').click()
-            print(E)
-        print("end choose_ticket_num")
-        # self.browser.save_screenshot("choose_ticket_num.png")
-
-    def insert_shopping(self):
-        try:
-            self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
-        except Exception as E:
-            print(E)
-            pass
-        try:
-            self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[9]/div/div').click()
-        except Exception as E:
-            print(E)
-            try:
-                self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[8]/div/div').click()
-            except Exception as E:
-                print(E)
-        print("end insert shopping")
-        # self.browser.save_screenshot("insert_shopping.png")
-
-    def payment_area(self):
-        print("start payment_area")
-        time.sleep(1)
-        try:
-            self.browser.find_element_by_xpath('//*[@id="checkout-btn"]/div/div').click()
-        except Exception as E:
-            print(E)
-            try:
-                self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
-            except Exception as E:
-                print(E)
-
-        print("end payment_area")
-        # self.browser.save_screenshot("payment_area.png")
-
-    def personal_data(self):
-        self.wait.until(EC.presence_of_element_located((By.ID, 'delivery-method-select')))
-        self.browser.find_element_by_xpath('//*[@id="input-surname"]').clear()
-        self.browser.find_element_by_xpath('//*[@id="input-surname"]').send_keys("cao")
-        self.browser.find_element_by_xpath('//*[@id="input-first-name"]').clear()
-        self.browser.find_element_by_xpath('//*[@id="input-first-name"]').send_keys('cao')
-        self.browser.find_element_by_xpath('//*[@id="input-email"]').clear()
-        self.browser.find_element_by_xpath('//*[@id="input-email"]').send_keys(self.params.get('email'))
-        self.browser.find_element_by_xpath('//*[@id="delivery-method-select"]').click()
-        time.sleep(2)
-        self.browser.find_element_by_xpath('//*[@id="delivery_method_group_TDM"]').click()
-
-    def choose_pay_mei(self):
-        print("start choose_pay")
-
-        self.browser.find_element_by_xpath('//*[@id="payment-type-select_title"]').click()
-        time.sleep(3)
-        self.browser.find_element_by_xpath('//*[@id="payment-type-select_child"]/ul/li[4]/img').click()
-        time.sleep(0.5)
-        self.browser.find_element_by_xpath('//*[@id="input-card-number"]').send_keys(
-            self.params.get('input_card_number'))
-        time.sleep(0.5)
-        self.browser.find_element_by_xpath('//*[@id="input-security-code"]').send_keys(
-            self.params.get('input_security_code'))
-        time.sleep(0.5)
-        self.browser.find_element_by_xpath('//*[@id="payment-expiry-month-select"]').send_keys(
-            self.params.get('payment_expiry_month_select'))
-        time.sleep(0.5)
-        self.browser.find_element_by_xpath('//*[@id="payment-expiry-year-select"]').send_keys(
-            self.params.get('payment_expiry_year_select'))
-        time.sleep(0.5)
-        self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div/span').click()
-        print("end choose_pay")
-        self.browser.save_screenshot("choose_pay.png")
-
-    def confirm_mei(self):
-        print("start_confirm_mei")
-        self.browser.find_element_by_xpath('//*[@id="checkbox-tnc"]').click()
-        self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div/span').click()
-        print("end confirm_mei")
-
-    def confirm(self):
-        print("start confirm")
-        self.browser.find_element_by_xpath('//*[@id="checkbox-tnc"]').click()
-        self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div').click()
-        print("end confirm")
-        self.browser.save_screenshot("confirm.png")
-
-    def save_ticket(self):
-        if self.browser.current_url == "":
-            pass
-        end = time.time()
-        self.browser.save_screenshot("save_ticket{}.png".format(end))
-
-    def login_crack(self):
+    def login_click(self):
         """
-        破解入口
+        登录
         :return: None
         """
-        self.open()
-        self.login()
+        self.browser.find_element_by_xpath('//*[@id="login-submit"]/div/div').click()
+        time.sleep(2)
+        print('login success')
+
+    def fei_vip(self):
+        self.browser.find_element_by_xpath('//*[@id="loginForm"]/div/table/tbody/tr[3]/td[2]/table/tbody/tr[8]/td/fieldset/input').click()
+        key_index = []
         while True:
             index = []
             result_str = list()
@@ -434,53 +290,120 @@ class CrackTouClick(object):
 
         self.click_code(key_index)
         self.login_click()
-        start = time.clock()
-        self.choose_ticker()
+
+    def choose_ticker_num(self):
+        # print("start choose_ticker_num")
+        self.wait.until(EC.presence_of_element_located((By.ID, 'ticket-quota-223-sel')))
+        html = self.browser.page_source.replace('xmlns="http://www.w3.org/1999/xhtml"', '')
+        options = PyQuery(html).find('#ticket-quota-223-sel > option')
+        num = PyQuery(options[-1]).val()
+        self.browser.find_element_by_xpath('//*[@id="ticket-quota-223-sel"]').send_keys(4)
+        # self.browser.find_element_by_xpath('//*[@id="ticket-quota-223-sel"]').send_keys(int(num))
+        self.browser.find_element_by_xpath('//*[@id="adjacent-seats-chk"]').click()
+        try:
+            self.browser.find_element_by_xpath('//*[@id="express-purchase-btn"]/div/span').click()
+        except:
+            self.browser.find_element_by_xpath('//*[@id="free-seat-purchase-btn"]/div/div/span').click()
+        try:
+            self.browser.find_element_by_xpath('/html/body/div[9]/div[3]/div/button[1]').click()
+        except Exception as E:
+        #     self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[8]/div/div').click()
+            print(E)
+        print("end choose_ticket_num")
+
+    def insert_shopping(self):
+        try:
+            self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
+        except Exception as E:
+            print(E)
+            pass
+        try:
+            self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[9]/div/div').click()
+        except Exception as E:
+            print(E)
+            try:
+                self.browser.find_element_by_xpath('//*[@id="reviewTicketForm"]/div[8]/div/div').click()
+            except Exception as E:
+                print(E)
+        print("end insert shopping")
+        # self.browser.save_screenshot("insert_shopping.png")
+
+    def payment_area(self):
+        print("start payment_area")
+        time.sleep(1)
+        try:
+            self.browser.find_element_by_xpath('//*[@id="checkout-btn"]/div/div').click()
+        except Exception as E:
+            print(E)
+            try:
+                self.browser.find_element_by_xpath('//*[@id="checkbox-not-adjacent"]').click()
+            except Exception as E:
+                print(E)
+
+        print("end payment_area")
+
+    def personal_data(self):
+        self.wait.until(EC.presence_of_element_located((By.ID, 'delivery-method-select')))
+        self.browser.find_element_by_xpath('//*[@id="input-surname"]').clear()
+        self.browser.find_element_by_xpath('//*[@id="input-surname"]').send_keys("cao")
+        self.browser.find_element_by_xpath('//*[@id="input-first-name"]').clear()
+        self.browser.find_element_by_xpath('//*[@id="input-first-name"]').send_keys('cao')
+        self.browser.find_element_by_xpath('//*[@id="input-email"]').clear()
+        self.browser.find_element_by_xpath('//*[@id="input-email"]').send_keys(self.params.get('email'))
+        self.browser.find_element_by_xpath('//*[@id="delivery-method-select"]').click()
+        time.sleep(2)
+        self.browser.find_element_by_xpath('//*[@id="delivery_method_group_TDM"]').click()
+
+    def choose_pay_mei(self):
+        print("start choose_pay")
+
+        self.browser.find_element_by_xpath('//*[@id="payment-type-select_title"]').click()
+        time.sleep(3)
+        self.browser.find_element_by_xpath('//*[@id="payment-type-select_child"]/ul/li[4]/img').click()
+        time.sleep(0.5)
+        self.browser.find_element_by_xpath('//*[@id="input-card-number"]').send_keys(
+            self.params.get('input_card_number'))
+        time.sleep(0.5)
+        self.browser.find_element_by_xpath('//*[@id="input-security-code"]').send_keys(
+            self.params.get('input_security_code'))
+        time.sleep(0.5)
+        self.browser.find_element_by_xpath('//*[@id="payment-expiry-month-select"]').send_keys(
+            self.params.get('payment_expiry_month_select'))
+        time.sleep(0.5)
+        self.browser.find_element_by_xpath('//*[@id="payment-expiry-year-select"]').send_keys(
+            self.params.get('payment_expiry_year_select'))
+        time.sleep(0.5)
+        self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div/span').click()
+        print("end choose_pay")
+        self.browser.save_screenshot("choose_pay.png")
+
+    def confirm_mei(self):
+        print("start_confirm_mei")
+        self.browser.find_element_by_xpath('//*[@id="checkbox-tnc"]').click()
+        self.browser.find_element_by_xpath('//*[@id="button-confirm"]/div/div/span').click()
+        print("end confirm_mei")
+
+    def run(self):
+        self.open()
+        self.check_current_page_url()
+        self.fei_vip()
+        time.sleep(1)
         self.choose_ticker_num()
         self.insert_shopping()
-        print(time.clock() - start)
         self.payment_area()
-        print(time.clock() - start)
         self.personal_data()
         self.choose_pay_mei()
-        print(time.clock() - start)
         self.confirm_mei()
-        time.sleep(120)
+        time.sleep(60)
 
 
 if __name__ == '__main__':
-    # while True:
-    redisConn = RedisConn()
-    #     params = redisConn.get_redis()
-    #     while time.time() < params.get('start_time', 0):
-    #         time.sleep(1)
-    #
-    #     crack = CrackTouClick(params)
-    #     crack.login_crack()
-
-    params1 = {"account": "taotao123", "password": "taotao123", "email": '15736755067@163.com',
-               "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/39198",
-               "input_card_number": "379387027461007", "input_security_code": 9549,
-               "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
-               "start_time": 1568520359
-               }
-
-    redisConn.write(params1)
-    #
-    # params = redisConn.get_redis()
-    # while time.time() < params.get('start_time', 0):
-    #     print(1)
-    #     time.sleep(1)
-    #
-    # crack = CrackTouClick(params)
-    # crack.login_crack()
-# 'http://msg.urbtix.hk/'
-#     '//*[@id="to-hot-event-btn"]' click
-#
-#     '//*[@id="to-other-event-btn"]'
-#
-#     '//*[@id="hot-event-alert-message"]/a' click
-#     'https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38203'
-#
-#
-#     '/html/body/div[9]/div[3]/div/button/span' 确定
+    while True:
+        redisConn = RedisConn()
+        params = redisConn.get_redis()
+        while time.time() < params.get('start_time', 0):
+            print("wait")
+            time.sleep(1)
+        print("start")
+        crack = CrackTouClick(params)
+        crack.run()
