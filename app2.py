@@ -57,8 +57,8 @@ class CrackTouClick(object):
 
         self.url = 'http://www.baidu.com'
         self.KeyUrl = 'https://ticket.urbtix.hk/internet/zh_TW/eventDetail/38663'
-        self.browser = webdriver.Chrome(options=chrome_options)
-        # self.browser = webdriver.Chrome()
+        # self.browser = webdriver.Chrome(options=chrome_options)
+        self.browser = webdriver.Chrome()
         self.browser_headless = True
         self.wait = WebDriverWait(self.browser, 20)
         self.chaojiying = Chaojiying(CHAOJIYING_USERNAME, CHAOJIYING_PASSWORD, CHAOJIYING_SOFT_ID)
@@ -177,7 +177,7 @@ class CrackTouClick(object):
             print("key: ", key)
             try:
                 if key == 0:
-                    self.browser.find_element_by_xpath('//*[@id="hot-event-alert-message"]/a').click()
+                    self.browser.find_element_by_xpath('//*[@id="to-hot-event-btn"]').click()
                     key = 1
             except Exception as E:
                 print(E)
