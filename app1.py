@@ -455,12 +455,7 @@ if __name__ == '__main__':
     #     crack = CrackTouClick(params)
     #     crack.login_crack()
 
-    params1 = {"account": "taochen123456", "password": "TC15736755067", "email": '15736755067@163.com',
-               "key_url": "https://ticket.urbtix.hk/internet/zh_TW/eventDetail/39311",
-               "input_card_number": "379387027461007", "input_security_code": 9549,
-               "payment_expiry_month_select": "05", "payment_expiry_year_select": 2024, "period": 1,
-               "start_time": 1578080500
-               }
+    params1 = {}
     redisConn = RedisConn()
     print('ok')
     redisConn.write(params1)
